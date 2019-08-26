@@ -4,13 +4,13 @@ using System.Linq;
 
 namespace BankAppSample
 {
-  public class Program
+    public class Program
     {
 
         public static void Main(string[] args)
         {
             Console.WriteLine("@@@@@@ Bank Application @@@@@@\n");
-            Main:
+        Main:
             Console.WriteLine("_____Home Page_____\n");
             Console.WriteLine("1.Registration Form\n");
             Console.WriteLine("2.Login Page\n");
@@ -18,7 +18,7 @@ namespace BankAppSample
             Console.WriteLine("4.Exit\n");
             Console.WriteLine("Enter your Choice..");
             int number1 = int.Parse(Console.ReadLine());
-            if (number1>0&&number1<=4)
+            if (number1 > 0 && number1 <= 4)
             {
                 goto Switchcase1;
             }
@@ -27,8 +27,8 @@ namespace BankAppSample
                 Console.WriteLine("Enter Valid Choice..\n");
                 goto Main;
             }
-            Switchcase1:
-            switch(number1)
+        Switchcase1:
+            switch (number1)
             {
                 case 1:
                     {
@@ -38,10 +38,10 @@ namespace BankAppSample
                     }
                 case 2:
                     {
-                       
+
                         Program program = new Program();
                         program.LoginMethod();
-                       
+
                         goto Main;
                     }
                 case 3:
@@ -59,7 +59,7 @@ namespace BankAppSample
         }
         //For Registration, Creating the object for entities of User Registration.
         public void RegistrationMethod()
-        { 
+        {
             Console.WriteLine("Please enter Registration details..");
 
             UserRegistration UserRegistrations = new UserRegistration();
@@ -76,15 +76,15 @@ namespace BankAppSample
             UserRegistrations.MotherName = MName;
 
             Console.WriteLine("Please enter Dateofbirth(Ex:15 / 05 / 2005)");
-            DateTime DOB =Convert.ToDateTime(Console.ReadLine());
+            DateTime DOB = Convert.ToDateTime(Console.ReadLine());
             UserRegistrations.Dateofbirth = DOB;
 
             Console.WriteLine("Please enter Age");
-            int age =int.Parse(Console.ReadLine());
+            int age = int.Parse(Console.ReadLine());
             UserRegistrations.Age = age;
 
             Console.WriteLine("Please enter MobileNumber");
-            long Phone =long.Parse(Console.ReadLine());
+            long Phone = long.Parse(Console.ReadLine());
             UserRegistrations.MobileNumber = Phone;
 
             Console.WriteLine("Please enter PermanemtAddress");
@@ -113,31 +113,31 @@ namespace BankAppSample
             //Passing Values from User Registration Table by using UserRegistration Id to Account holder details table, 
             using (var context = new BankContext())
             {
-                var user= context.UserRegistrations.Where(x=>x.UserName== UserRegistrations.UserName).FirstOrDefault();
-                if(user!=null)
+                var user = context.UserRegistrations.Where(x => x.UserName == UserRegistrations.UserName).FirstOrDefault();
+                if (user != null)
                 {
                     AccountHolderDetails accountHolderDetails = new AccountHolderDetails();
                     accountHolderDetails.AcHolderName = user.UserName;
                     accountHolderDetails.AvailBalance = 000;
-                    accountHolderDetails.RegistrationId=user.RegistrationId;
+                    accountHolderDetails.RegistrationId = user.RegistrationId;
                     Random R = new Random();
-                    var accnumber= ((long)R.Next(0, 100000) * (long)R.Next(0, 100000)).ToString().PadLeft(10, '0');
+                    var accnumber = ((long)R.Next(0, 100000) * (long)R.Next(0, 100000)).ToString().PadLeft(10, '0');
                     accountHolderDetails.AccountNumber = accnumber;
                     context.AccountHolderDetails.Add(accountHolderDetails);
                     context.SaveChanges();
                 }
-               
+
                 Console.WriteLine("Account Number Successfully Generated..");
             }
-            
+
 
 
         }
         //For Login by using our credentials.
         public void LoginMethod()
         {
-            //For Asking the User Name.
-            ReenterUname:
+        //For Asking the User Name.
+        ReenterUname:
             Console.WriteLine("Enter username:");
             string username = Console.ReadLine();
             using (var context = new BankContext())
@@ -150,11 +150,11 @@ namespace BankAppSample
                 }
                 else
                 {
-                    //For asking the Password.
-                    ReenterPwd:
+                //For asking the Password.
+                ReenterPwd:
                     Console.WriteLine("Enter password:");
                     string pwd = Console.ReadLine();
-                    if (pwd!= userinfo[0].Password)
+                    if (pwd != userinfo[0].Password)
                     {
                         Console.WriteLine("Incorrect password");
                         goto ReenterPwd;
@@ -163,10 +163,10 @@ namespace BankAppSample
                     {
                         //For Account Holder Details.
                         Console.WriteLine("Successfully Login To Your Account.\n");
-                        AHD:
+                    AHD:
                         Console.WriteLine("1.User Details\n");
                         Console.WriteLine("2.User Transactions\n");
-                        Console.WriteLine("3.Back\n");
+                        Console.WriteLine("3.Logout\n");
                         Console.WriteLine("Enter Your Choice..");
                         int number2 = int.Parse(Console.ReadLine());
                         if (number2 > 0 && number2 <= 3)
@@ -178,12 +178,13 @@ namespace BankAppSample
                             Console.WriteLine("Enter Valid Choice..\n");
                             goto AHD;
                         }
-                        Switchcase2:
+                    Switchcase2:
                         switch (number2)
                         {
                             case 1:
                                 {
-                                    using (var ctext=new BankContext())
+                                    //Getting the Account Holder Details by using Linq Query Based on user Login Credentials..
+                                    using (var ctext = new BankContext())
                                     {
                                         var acholderinfo = ctext.AccountHolderDetails.Where(a => a.AcHolderName == username).FirstOrDefault();
 
@@ -202,12 +203,13 @@ namespace BankAppSample
                                         //Console.WriteLine("RegistrationId:      {0}", acholderinfo.RegistrationId);
                                     }
                                     goto AHD;
-                                    
+
                                 }
                             case 2:                                                                                                                            //Writing Now
                                 {
                                     Console.WriteLine("Successfully Entered Into Transactions...\n");
 
+                                    //Getting the Account Holder Details and inserting the data what we required in User Transactions..
                                     using (var cntext = new BankContext())
                                     {
                                         var transatinfo = cntext.AccountHolderDetails.Where(a => a.AcHolderName == username).FirstOrDefault();
@@ -216,8 +218,8 @@ namespace BankAppSample
                                         userTransaction.AccountNumber = transatinfo.AccountNumber;
                                         userTransaction.AvailBal = transatinfo.AvailBalance;
                                         userTransaction.AccountHolderName = transatinfo.AcHolderName;
-                                        //userTransaction.DateofTransaction = DateTime.UtcNow;
-                                        depositwithdraw:
+                                    //userTransaction.DateofTransaction = DateTime.UtcNow;
+                                    depositwithdraw:
                                         Console.WriteLine("1.Deposit");
                                         Console.WriteLine("2.Withdraw");
                                         Console.WriteLine("3.Transaction Details");
@@ -234,32 +236,38 @@ namespace BankAppSample
                                             Console.WriteLine("Enter Valid Choice..\n");
                                             goto depositwithdraw;
                                         }
-                                        Switchcase3:
-                                        switch(number3)
+                                    Switchcase3:
+                                        switch (number3)
                                         {
                                             case 1:
                                                 {
+                                                    //Asking the Amount to Deposit in your Account..
                                                     Console.WriteLine("Enter Deposit Amount:");
                                                     decimal depositamt = decimal.Parse(Console.ReadLine());
+                                                    //Adding the Entered Amount in Deposit column in Transaction Database..
                                                     userTransaction.DepositAmount = depositamt;
                                                     decimal AvailBalance = userTransaction.AvailBal + depositamt;
+                                                    //Updating the Balance in User Transactions..
                                                     userTransaction.AvailBal = AvailBalance;
                                                     //Updating the Balance in Account Holder Details..
                                                     transatinfo.AvailBalance = AvailBalance;
-                                                    
+
                                                     userTransaction.DateofTransaction = DateTime.Now;
                                                     cntext.UserTransaction.Add(userTransaction);
                                                     cntext.SaveChanges();
                                                     Console.WriteLine("\nMoney Deposited Successfully..\n");
-                                                    goto depositwithdraw;
+                                                    goto AHD;
 
                                                 }
                                             case 2:
                                                 {
+                                                    //Asking the Amount to Withdraw from your Account..
                                                     Console.WriteLine("Enter Withdraw Amount:");
                                                     decimal withdrawamt = decimal.Parse(Console.ReadLine());
+                                                    //Adding the Entered Amount in Withdraw column in Transaction Database..
                                                     userTransaction.WithdrawAmount = withdrawamt;
                                                     decimal AvailBalance = userTransaction.AvailBal - withdrawamt;
+                                                    //Updating the Balance in User Transactions..
                                                     userTransaction.AvailBal = AvailBalance;
                                                     //Updating the Balance in Account Holder Details..
                                                     transatinfo.AvailBalance = AvailBalance;
@@ -268,16 +276,17 @@ namespace BankAppSample
                                                     cntext.UserTransaction.Add(userTransaction);
                                                     cntext.SaveChanges();
                                                     Console.WriteLine("\nWithdrawl Money Successfully..\n");
-                                                    goto depositwithdraw;
+                                                    goto AHD;
                                                 }
                                             case 3:
                                                 {
 
                                                     //Getting Last Transaction info from Transaction Db Related to Login Details..
                                                     var transactioninfo = cntext.UserTransaction.Where(a => a.AccountHolderName == username).LastOrDefault();
+                                                    //transactioninfo=cntext.UserTransaction.Where(a=>a.AccountHolderName==username).Where(f=>f.TransactionId== )
 
                                                     //Printing the Last Transaction Details in Table Format using Account Holder Login Credintials..
-                                                    IEnumerable<Tuple<int, string, string,decimal,decimal,DateTime,decimal>> authors =   new[] {Tuple.Create(transactioninfo.TransactionId,transactioninfo.AccountHolderName,
+                                                    IEnumerable<Tuple<int, string, string, decimal, decimal, DateTime, decimal>> authors = new[] {Tuple.Create(transactioninfo.TransactionId,transactioninfo.AccountHolderName,
                                                         transactioninfo.AccountNumber,transactioninfo.DepositAmount,transactioninfo.WithdrawAmount,
                                                         transactioninfo.DateofTransaction,transactioninfo.AvailBal)};
 
@@ -294,7 +303,7 @@ namespace BankAppSample
                                                     //Console.WriteLine("WithdrawAmount       :   {0}", transactioninfo.WithdrawAmount);
                                                     //Console.WriteLine("DateofTransaction    :   {0}", transactioninfo.DateofTransaction);
                                                     //Console.WriteLine("AvailableBalance     :   {0}\n", transactioninfo.AvailBal);
-                                                    goto depositwithdraw;
+                                                    goto AHD;
 
                                                 }
                                             case 4:
@@ -302,7 +311,7 @@ namespace BankAppSample
                                                     break;
                                                 }
                                         }
-                                        
+
 
                                     }
                                     goto AHD;
@@ -317,9 +326,9 @@ namespace BankAppSample
 
                 }
             }
-            
+
         }
 
-  }
+    }
 
 }
