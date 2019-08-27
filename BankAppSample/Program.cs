@@ -57,7 +57,9 @@ namespace BankAppSample
             }
 
         }
-        //For Registration, Creating the object for entities of User Registration.
+
+
+        //for registration, creating the object for entities of user registration.
         public void RegistrationMethod()
         {
             Console.WriteLine("Please enter Registration details..");
@@ -133,6 +135,8 @@ namespace BankAppSample
 
 
         }
+
+
         //For Login by using our credentials.
         public void LoginMethod()
         {
@@ -205,7 +209,7 @@ namespace BankAppSample
                                     goto AHD;
 
                                 }
-                            case 2:                                                                                                                            //Writing Now
+                            case 2:
                                 {
                                     Console.WriteLine("Successfully Entered Into Transactions...\n");
 
@@ -282,19 +286,22 @@ namespace BankAppSample
                                                 {
 
                                                     //Getting Last Transaction info from Transaction Db Related to Login Details..
-                                                    var transactioninfo = cntext.UserTransaction.Where(a => a.AccountHolderName == username).LastOrDefault();
+                                                    var accInfo = cntext.AccountHolderDetails.Where(x => x.AcHolderName == username).FirstOrDefault();
+                                                    var transactioninfo = cntext.UserTransaction.Where(a => a.AccountHolderName == username && a.AccountNumber == accInfo.AccountNumber).ToList();
                                                     //transactioninfo=cntext.UserTransaction.Where(a=>a.AccountHolderName==username).Where(f=>f.TransactionId== )
 
-                                                    //Printing the Last Transaction Details in Table Format using Account Holder Login Credintials..
-                                                    IEnumerable<Tuple<int, string, string, decimal, decimal, DateTime, decimal>> authors = new[] {Tuple.Create(transactioninfo.TransactionId,transactioninfo.AccountHolderName,
-                                                        transactioninfo.AccountNumber,transactioninfo.DepositAmount,transactioninfo.WithdrawAmount,
-                                                        transactioninfo.DateofTransaction,transactioninfo.AvailBal)};
+                                                    foreach (var Info in transactioninfo)
+                                                    {
+                                                        //Printing the Last Transaction Details in Table Format using Account Holder Login Credintials..
+                                                        IEnumerable<Tuple<string, string, decimal, decimal, DateTime, decimal>> authors = new[] {Tuple.Create(Info.AccountHolderName,
+                                                        Info.AccountNumber,Info.DepositAmount,Info.WithdrawAmount,
+                                                        Info.DateofTransaction,Info.AvailBal)};
 
-                                                    //For Creating Table Format..
-                                                    Console.WriteLine(authors.ToStringTable(
-                                                      new[] { "Id", "Account Holder Name", "Account Number", "DepositAmount", "WithdrawAmount", "DateofTransaction", "AvailableBalance" },
-                                                      a => a.Item1, a => a.Item2, a => a.Item3, a => a.Item4, a => a.Item5, a => a.Item6, a => a.Item7));
-
+                                                        //For Creating Table Format..
+                                                        Console.WriteLine(authors.ToStringTable(
+                                                          new[] { "Account Holder Name", "Account Number", "DepositAmount", "WithdrawAmount", "DateofTransaction", "AvailableBalance" },
+                                                          a => a.Item1, a => a.Item2, a => a.Item3, a => a.Item4, a => a.Item5, a => a.Item6));
+                                                    }
                                                     //Console.ReadLine();
 
                                                     //Console.WriteLine("Account Holder Name  :   {0}", transactioninfo.AccountHolderName);
